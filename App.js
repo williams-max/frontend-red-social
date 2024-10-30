@@ -36,10 +36,10 @@ const App = () => {
           tabBarInactiveTintColor: 'gray',
         })}
       >
-        <Tab.Screen name="Home" component={Home} />
-        <Tab.Screen name="Perfil" component={UserProfile} />
-        <Tab.Screen name="Mensajes" component={SearchScreen} />
-        <Tab.Screen name="Configuración" component={SettingsScreen} />
+        <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
+        <Tab.Screen name="Perfil" component={UserProfile} options={{ headerShown: false }} />
+        <Tab.Screen name="Mensajes" component={SearchScreen} options={{ headerShown: false }} />
+        <Tab.Screen name="Configuración" component={SettingsScreen} options={{ headerShown: false }} />
       </Tab.Navigator>
     </NavigationContainer>
   );
