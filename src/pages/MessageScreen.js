@@ -1,17 +1,32 @@
-import React from 'react';
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
 
 const MessageScreen = () => {
-  const messages = [
+  const [messages, setMessages] = useState([
     { id: '1', text: 'Hello! How are you?', isSent: true, time: '10:00 AM' },
     { id: '2', text: 'I’m good, thanks!', isSent: false, time: '10:01 AM' },
     { id: '3', text: 'Great! Want to catch up later?', isSent: true, time: '10:05 AM' },
     { id: '4', text: 'Sure, let me know the time.', isSent: false, time: '10:06 AM' },
-  ];
+  ]);
+  const [newMessage, setNewMessage] = useState('');
+
+  const handleSend = () => {
+    if (newMessage.trim()) {
+      const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const newMessageData = {
+        id: Math.random().toString(),
+        text: newMessage,
+        isSent: true,
+        time: currentTime,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageData]);
+      setNewMessage('');
+    }
+  };
 
   return (
-    <View style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={styles.messageList}>
         {messages.map((message) => (
           <View
@@ -44,17 +59,24 @@ const MessageScreen = () => {
         ))}
       </ScrollView>
 
-      {/* Botón flotante */}
-      <TouchableOpacity style={styles.fab}>
-        <Icon name="add" type="material" size={28} color="white" />
-      </TouchableOpacity>
-    </View>
+      {/* Caja de entrada y botón de envío */}
+      <View style={styles.inputContainer}>
+        <TextInput
+          style={styles.input}
+          placeholder="Escribe un mensaje..."
+          value={newMessage}
+          onChangeText={setNewMessage}
+        />
+        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+          <Icon name="send" type="material" size={24} color="white" />
+        </TouchableOpacity>
+      </View>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 15,
     flex: 1,
     backgroundColor: '#e5e5ea',
   },
@@ -104,19 +126,29 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     marginTop: 4,
   },
-  fab: {
-    position: 'absolute',
-    bottom: 20,
-    right: 20,
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 10,
+    backgroundColor: '#ffffff',
+    borderTopWidth: 1,
+    borderColor: '#e5e5ea',
+  },
+  input: {
+    flex: 1,
+    height: 40,
+    borderRadius: 20,
+    paddingHorizontal: 15,
+    backgroundColor: '#f0f0f5',
+    marginRight: 10,
+  },
+  sendButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#ff69b4',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
   },
 });
 
