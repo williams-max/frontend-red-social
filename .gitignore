@@ -1,0 +1,68 @@
+# Node dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+
+# Expo and React Native specific files
+.expo/
+.expo-shared/
+web-build/
+android/
+ios/
+
+# Logs
+*.log
+*.log.*
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Babel cache
+.babelrc
+.babelrc.js
+babel.config.js
+
+# Metro bundler cache
+.expo
+.expo-shared
+.expo-local
+.expo-local-set
+.metro
+
+# Watchman cache files
+.watchmanconfig
+
+# dotenv environment files
+.env
+.env.local
+.env.development.local
+.env.production.local
+.env.test.local
+
+# Temporary files
+temp/
+tmp/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# CocoaPods dependencies (for iOS projects)
+Pods/
+Podfile.lock
+
+# JetBrains IDEs
+.idea/
+
+# Android Studio
+.gradle/
+local.properties
+/.cxx/
+.cxx/
