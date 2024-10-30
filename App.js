@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 // Importar las pantallas
 import Home from './src/pages/Home';
 import UserProfile from './src/pages/UserProfile';
-import SearchScreen from './src/pages/SearchScreen';
+import MessageScreen from './src/pages/MessageScreen';
 import SettingsScreen from './src/pages/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
@@ -38,7 +38,7 @@ const App = () => {
       >
         <Tab.Screen name="Home" component={Home} options={{ headerShown: false }} />
         <Tab.Screen name="Perfil" component={UserProfile} options={{ headerShown: false }} />
-        <Tab.Screen name="Mensajes" component={SearchScreen} options={{ headerShown: false }} />
+        <Tab.Screen name="Mensajes" component={MessageScreen} options={{ headerShown: false }} />
         <Tab.Screen name="Configuración" component={SettingsScreen} options={{ headerShown: false }} />
       </Tab.Navigator>
     </NavigationContainer>

@@ -7,7 +7,10 @@ const Home = () => {
     { id: '1', description: 'Post description goes here...', imageUrl: 'https://i.ibb.co/9ZjWrZG/men.png' },
     { id: '2', description: 'Another post description...', imageUrl: 'https://i.ibb.co/5KMXQyt/woman-1.png' },
     { id: '3', description: 'More content...', imageUrl: 'https://i.ibb.co/hH4mPTb/woman-2.png' },
-    { id: '4', description: 'More content...', imageUrl: 'https://your-post-image-url.com' },
+    { id: '4', description: 'Post description goes here...', imageUrl: 'https://i.ibb.co/9ZjWrZG/men.png' },
+    { id: '5', description: 'Another post description...', imageUrl: 'https://i.ibb.co/5KMXQyt/woman-1.png' },
+    { id: '6', description: 'More content...', imageUrl: 'https://i.ibb.co/hH4mPTb/woman-2.png' },
+    { id: '7', description: 'More content...', imageUrl: 'https://your-post-image-url.com' },
   ];
 
   const renderPost = ({ item }) => (
