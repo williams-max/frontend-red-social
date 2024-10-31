@@ -1,17 +1,31 @@
 import React from 'react';
 import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
 import { Avatar, Button, Icon } from 'react-native-elements';
+import { TouchableOpacity } from 'react-native';
 
-const Home = () => {
+const Home = ({ navigation }) => {
   const posts = [
-    { id: '1', description: 'Post description goes here...', imageUrl: 'https://i.ibb.co/9ZjWrZG/men.png' },
-    { id: '2', description: 'Another post description...', imageUrl: 'https://i.ibb.co/5KMXQyt/woman-1.png' },
-    { id: '3', description: 'More content...', imageUrl: 'https://i.ibb.co/hH4mPTb/woman-2.png' },
-    { id: '4', description: 'Post description goes here...', imageUrl: 'https://i.ibb.co/9ZjWrZG/men.png' },
-    { id: '5', description: 'Another post description...', imageUrl: 'https://i.ibb.co/5KMXQyt/woman-1.png' },
-    { id: '6', description: 'More content...', imageUrl: 'https://i.ibb.co/hH4mPTb/woman-2.png' },
-    { id: '7', description: 'More content...', imageUrl: 'https://your-post-image-url.com' },
+    { id: '1', name: 'John Doe',description: 'Post description goes here...', imageUrl: 'https://i.ibb.co/9ZjWrZG/men.png' },
+    { id: '2', name: 'John Doe',description: 'Another post description...', imageUrl: 'https://i.ibb.co/5KMXQyt/woman-1.png' },
+    { id: '3', name: 'John Doe',description: 'More content...', imageUrl: 'https://i.ibb.co/hH4mPTb/woman-2.png' },
+    { id: '4', name: 'John Doe',description: 'Post description goes here...', imageUrl: 'https://i.ibb.co/9ZjWrZG/men.png' },
+    { id: '5', name: 'John Doe',description: 'Another post description...', imageUrl: 'https://i.ibb.co/5KMXQyt/woman-1.png' },
+    { id: '6', name: 'John Doe',description: 'More content...', imageUrl: 'https://i.ibb.co/hH4mPTb/woman-2.png' },
+    { id: '7', name: 'John Doe',description: 'More content...', imageUrl: 'https://your-post-image-url.com' },
   ];
+
+  /* const handlePress = (user) => {
+    // navigation.navigate('MessageScreen', { user });
+    // Navegar a la pestaña "Mensajes" y pasar los datos de usuario
+    navigation.navigate('Mensajes', { screen: 'MessageScreen', params: { user } });
+  }; */
+
+  const handlePress = (user) => {
+    // Utilizar setTimeout para diferir la navegación
+    setTimeout(() => {
+      navigation.navigate('Mensajes', { screen: 'MessageScreen', params: { user } });
+    }, 0);
+  };
 
   const renderPost = ({ item }) => (
     <View style={styles.postCard}>
@@ -19,7 +33,14 @@ const Home = () => {
       <Text style={styles.postText}>{item.description}</Text>
       <View style={styles.iconContainer}>
         <Icon name="favorite" type="material" color="#ff5252" />
-        <Icon name="chat-bubble-outline" type="material" color="#4a90e2" />
+        <TouchableOpacity onPress={handlePress(item)}>
+          <Icon
+            name="chat-bubble-outline"
+            type="material"
+            size={28}
+            color="#4a90e2"
+          />
+        </TouchableOpacity>
         <Icon name="bookmark-outline" type="material-community" color="black" />
       </View>
     </View>
