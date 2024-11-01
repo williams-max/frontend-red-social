@@ -14,17 +14,9 @@ const Home = ({ navigation }) => {
     { id: '7', name: 'John Doe',description: 'More content...', imageUrl: 'https://your-post-image-url.com' },
   ];
 
-  /* const handlePress = (user) => {
-    // navigation.navigate('MessageScreen', { user });
-    // Navegar a la pestaña "Mensajes" y pasar los datos de usuario
-    navigation.navigate('Mensajes', { screen: 'MessageScreen', params: { user } });
-  }; */
-
   const handlePress = (user) => {
     // Utilizar setTimeout para diferir la navegación
-    setTimeout(() => {
-      navigation.navigate('Mensajes', { screen: 'MessageScreen', params: { user } });
-    }, 0);
+    navigation.navigate('Mensajes', { screen: 'MessageScreen', params: { user } });
   };
 
   const renderPost = ({ item }) => (
@@ -33,7 +25,7 @@ const Home = ({ navigation }) => {
       <Text style={styles.postText}>{item.description}</Text>
       <View style={styles.iconContainer}>
         <Icon name="favorite" type="material" color="#ff5252" />
-        <TouchableOpacity onPress={handlePress(item)}>
+        <TouchableOpacity onPress={() => handlePress(item)}>
           <Icon
             name="chat-bubble-outline"
             type="material"
