@@ -37,13 +37,32 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const register = async (name, email, password) => {
+    try {
+      const response = await axiosInstance.post('/register', { name, email,password});
+       // Guarda la información del usuario en AsyncStorage
+      console.log('respuesta de registro ', response.data)
+       /* const userData = {
+        name: response.data.user.name,
+        email: response.data.user.email,
+        token: response.data.token,
+      }; */
+      // Guarda token o estado de autenticación en AsyncStorage
+      // await AsyncStorage.setItem('user', JSON.stringify(userData));
+      // setIsLoggedIn(true);
+      // setUserInfo(userData); // Actualiza la información del usuario
+    } catch (error) {
+      console.log(error)
+    }
+  };
+
   const logout = () => {
     setIsLoggedIn(false);
     AsyncStorage.removeItem('user');
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn , userInfo, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn , userInfo, login, logout , register }}>
       {children}
     </AuthContext.Provider>
   );

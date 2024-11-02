@@ -1,15 +1,19 @@
 // RegisterScreen.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
 import { Icon } from 'react-native-elements';
+import { AuthContext } from '../context/AuthContext';
 
 const RegisterScreen = ({ navigation }) => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = () => {
+  const { register } = useContext(AuthContext);
+
+  const handleRegister = async () => {
     // Aquí puedes añadir la lógica de registro
+    await register(name, email, password)
     console.log('Registering with:', name, email, password);
   };
 
