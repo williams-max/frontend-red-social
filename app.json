@@ -18,6 +18,14 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      },
+      "networkSecurityConfig": {
+        "domain-config": [
+          {
+            "domain": "192.168.81.33",  // Cambia esto a la IP de tu servidor local
+            "cleartextTrafficPermitted": true
+          }
+        ]
       }
     },
     "web": {
