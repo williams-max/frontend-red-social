@@ -67,6 +67,7 @@ const Home = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
+    marginTop:20,
     flex: 1,
     backgroundColor: '#f4f4f4',
   },
