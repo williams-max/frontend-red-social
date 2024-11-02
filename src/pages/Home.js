@@ -1,12 +1,13 @@
-import React,{ useContext } from 'react';
+import React,{ useContext, useEffect, useState } from 'react';
 import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
 import { Avatar, Button, Icon } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
+import axiosInstance from '../config/axiosConfig';
 
 const Home = ({ navigation }) => {
   const { userInfo } = useContext(AuthContext);
-  console.log('user infor ', userInfo)
+  const [usuarios, setUsuarios ] = useState([]);
   const posts = [
     { id: '1', name: 'John Doe',description: 'Post description goes here...', imageUrl: 'https://i.ibb.co/9ZjWrZG/men.png' },
     { id: '2', name: 'John Doe',description: 'Another post description...', imageUrl: 'https://i.ibb.co/5KMXQyt/woman-1.png' },
@@ -17,6 +18,19 @@ const Home = ({ navigation }) => {
     { id: '7', name: 'John Doe',description: 'More content...', imageUrl: 'https://your-post-image-url.com' },
   ];
 
+  useEffect(() => {
+    loadUser()
+  }, []);
+
+  const loadUser = async () => {
+    try {
+      const response = await axiosInstance.get('/users');
+      setUsuarios(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const handlePress = (user) => {
     // Utilizar setTimeout para diferir la navegación
     navigation.navigate('Mensajes', { screen: 'MessageScreen', params: { user } });
@@ -25,7 +39,7 @@ const Home = ({ navigation }) => {
   const renderPost = ({ item }) => (
     <View style={styles.postCard}>
       <Image style={styles.postImage} source={{ uri: item.imageUrl }} />
-      <Text style={styles.postText}>{item.description}</Text>
+      <Text style={styles.postText}>{item.name}</Text>
       <View style={styles.iconContainer}>
         <Icon name="favorite" type="material" color="#ff5252" />
         <TouchableOpacity onPress={() => handlePress(item)}>
@@ -58,7 +72,7 @@ const Home = ({ navigation }) => {
 
       {/* Posts Section */}
       <FlatList
-        data={posts}
+        data={usuarios}
         renderItem={renderPost}
         keyExtractor={(item) => item.id}
         numColumns={2}
