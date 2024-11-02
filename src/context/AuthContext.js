@@ -8,6 +8,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userInfo, setUserInfo] = useState(null); // Inicializado a null
 
   useEffect(() => {
     // Aquí verifica si el usuario está autenticado (ej. con AsyncStorage o algún otro método)
@@ -21,10 +22,16 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       const response = await axiosInstance.post('/auth', { email,password});
-      // setIsLoggedIn(true);
-      console.log("entre al metodo login ", response.data)
+       // Guarda la información del usuario en AsyncStorage
+       const userData = {
+        name: response.data.user.name,
+        email: response.data.user.email,
+        token: response.data.token,
+      };
       // Guarda token o estado de autenticación en AsyncStorage
-      // AsyncStorage.setItem('user', 'your-token');
+      await AsyncStorage.setItem('user', JSON.stringify(userData));
+      setIsLoggedIn(true);
+      setUserInfo(userData); // Actualiza la información del usuario
     } catch (error) {
       console.log(error)
     }
@@ -36,7 +43,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn , userInfo, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

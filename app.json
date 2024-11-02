@@ -22,7 +22,7 @@
       "networkSecurityConfig": {
         "domain-config": [
           {
-            "domain": "192.168.81.33",  // Cambia esto a la IP de tu servidor local
+            "domain": "192.168.81.33",
             "cleartextTrafficPermitted": true
           }
         ]

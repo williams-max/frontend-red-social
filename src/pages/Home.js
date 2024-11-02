@@ -1,9 +1,12 @@
-import React from 'react';
+import React,{ useContext } from 'react';
 import { View, Text, Image, FlatList, StyleSheet } from 'react-native';
 import { Avatar, Button, Icon } from 'react-native-elements';
 import { TouchableOpacity } from 'react-native';
+import { AuthContext } from '../context/AuthContext';
 
 const Home = ({ navigation }) => {
+  const { userInfo } = useContext(AuthContext);
+  console.log('user infor ', userInfo)
   const posts = [
     { id: '1', name: 'John Doe',description: 'Post description goes here...', imageUrl: 'https://i.ibb.co/9ZjWrZG/men.png' },
     { id: '2', name: 'John Doe',description: 'Another post description...', imageUrl: 'https://i.ibb.co/5KMXQyt/woman-1.png' },
@@ -44,7 +47,7 @@ const Home = ({ navigation }) => {
       <View style={styles.header}>
         <Avatar rounded size="large" source={{ uri: 'https://i.ibb.co/vzTngDp/download.png' }} />
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>Leko</Text>
+          <Text style={styles.userName}>{ userInfo?.name}</Text>
           <Text style={styles.userStats}>Posts: 23 | Followers: 120</Text>
         </View>
         <View style={styles.buttons}>
