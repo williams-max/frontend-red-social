@@ -17,27 +17,47 @@ const MessageScreen = () => {
   ]);
   const [newMessage, setNewMessage] = useState('');
   const { userInfo } = useContext(AuthContext);
-  const [existeConversacion, setExisteConversacion] = useState(false);
   const parametros = route.params; // Recupera `user` desde `route.params`
 
-  console.log('parametros ',parametros)
+  // console.log('parametros ',parametros)
   useEffect(() => {
+    setMessages([]);
     loadMessages()
-  }, []);
+  }, [route.params.user]);
 
   const loadMessages = async () => {
     try {
-      const response = await axiosInstance.get('/message?conversationId=1');
-      console.log(response.data)
-      setMessages(response.data)
+
+      if(!userInfo?.id || !parametros?.user?.id){
+        return ;
+      }
+      const responseExiste = await axiosInstance.post('/existe-conversacion',{
+        "remitenteId": userInfo.id,
+        "receptorId":  parametros.user.id
+      });
+      if (responseExiste?.data?.length > 0) {
+        const response = await axiosInstance.get(`/message?conversationId=${responseExiste.data[0].conversation_id}`);
+        setMessages(response.data)
+      }
       // setUsuarios(response.data)
     } catch (error) {
       console.log(error)
     }
   }
 
-  const handleSend = () => {
-    if (newMessage.trim()) {
+  const handleSend = async () => {
+    try {
+      const creacionMensaje = await axiosInstance.post('/message',{
+        "remitenteId": userInfo.id,
+        "receptorId":  parametros.user.id,
+        "content": newMessage
+      });
+      await loadMessages()
+    } catch (error) {
+      console.log("error ----> ", error)
+    }
+    
+    /* if (newMessage.trim()) {
       const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
       const newMessageData = {
         id: Math.random().toString(),
@@ -47,7 +67,7 @@ const MessageScreen = () => {
       };
       setMessages((prevMessages) => [...prevMessages, newMessageData]);
       setNewMessage('');
-    }
+    }  */
   };
 
   const compareId = (senderId) => {
@@ -100,7 +120,7 @@ const MessageScreen = () => {
           value={newMessage}
           onChangeText={setNewMessage}
         />
-        <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
+        <TouchableOpacity style={styles.sendButton} onPress={() => handleSend()}>
           <Icon name="send" type="material" size={24} color="white" />
         </TouchableOpacity>
       </View>
