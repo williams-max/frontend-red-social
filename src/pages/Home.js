@@ -59,7 +59,7 @@ const Home = ({ navigation }) => {
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <Avatar rounded size="large" source={{ uri: 'https://i.ibb.co/vzTngDp/download.png' }} />
+        <Avatar rounded size="large" source={{ uri: userInfo?.imageUrl }} />
         <View style={styles.userInfo}>
           <Text style={styles.userName}>{ userInfo?.name}</Text>
           <Text style={styles.userStats}>Posts: 23 | Followers: 120</Text>

@@ -1,15 +1,35 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { Avatar, Icon } from 'react-native-elements';
+import axiosInstance from '../config/axiosConfig';
+import { AuthContext } from '../context/AuthContext';
 
 const MessageScreen = () => {
-  const [messages, setMessages] = useState([
+  /* const [messages, setMessages] = useState([
     { id: '1', text: 'Hello! How are you?', isSent: true, time: '10:00 AM' },
     { id: '2', text: 'I’m good, thanks!', isSent: false, time: '10:01 AM' },
     { id: '3', text: 'Great! Want to catch up later?', isSent: true, time: '10:05 AM' },
     { id: '4', text: 'Sure, let me know the time.', isSent: false, time: '10:06 AM' },
+  ]); */
+  const [messages, setMessages] = useState([
   ]);
   const [newMessage, setNewMessage] = useState('');
+  const { userInfo } = useContext(AuthContext);
+ console.log('user info ', userInfo)
+  useEffect(() => {
+    loadMessages()
+  }, []);
+
+  const loadMessages = async () => {
+    try {
+      const response = await axiosInstance.get('/message?conversationId');
+      console.log(response.data)
+      setMessages(response.data)
+      // setUsuarios(response.data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handleSend = () => {
     if (newMessage.trim()) {
@@ -25,6 +45,14 @@ const MessageScreen = () => {
     }
   };
 
+  const compareId = (senderId) => {
+    if (userInfo?.id === senderId) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={styles.messageList}>
@@ -33,14 +61,14 @@ const MessageScreen = () => {
             key={message.id}
             style={[
               styles.messageContainer,
-              message.isSent ? styles.sentMessage : styles.receivedMessage,
+              compareId(message.senderId) ? styles.sentMessage : styles.receivedMessage,
             ]}
           >
-            {!message.isSent && (
+            {!compareId(message.senderId) && (
               <Avatar
                 rounded
                 size="small"
-                source={{ uri: 'https://i.ibb.co/9ZjWrZG/men.png' }} // Reemplaza con la URL real
+                source={{ uri: message?.userCreador?.imageUrl }} // Reemplaza con la URL real
                 containerStyle={styles.avatar}
               />
             )}
@@ -48,12 +76,12 @@ const MessageScreen = () => {
               <View
                 style={[
                   styles.messageBubble,
-                  message.isSent ? styles.sentBubble : styles.receivedBubble,
+                  compareId(message.senderId) ? styles.sentBubble : styles.receivedBubble,
                 ]}
               >
-                <Text style={styles.messageText}>{message.text}</Text>
+                <Text style={styles.messageText}>{message.content}</Text>
               </View>
-              <Text style={styles.messageTime}>{message.time}</Text>
+              <Text style={styles.messageTime}>{message.createdAt}</Text>
             </View>
           </View>
         ))}

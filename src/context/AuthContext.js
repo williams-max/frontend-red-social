@@ -24,8 +24,10 @@ export const AuthProvider = ({ children }) => {
       const response = await axiosInstance.post('/auth', { email,password});
        // Guarda la información del usuario en AsyncStorage
        const userData = {
+        id: response.data.user.id,
         name: response.data.user.name,
         email: response.data.user.email,
+        imageUrl: response.data.user.imageUrl,
         token: response.data.token,
       };
       // Guarda token o estado de autenticación en AsyncStorage
