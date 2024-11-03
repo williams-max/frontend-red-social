@@ -22,7 +22,7 @@
       "networkSecurityConfig": {
         "domain-config": [
           {
-            "domain": "192.168.81.33",
+            "domain": "192.168.185.33",
             "cleartextTrafficPermitted": true
           }
         ]

@@ -3,8 +3,10 @@ import { View, Text, ScrollView, StyleSheet, TouchableOpacity, TextInput, Keyboa
 import { Avatar, Icon } from 'react-native-elements';
 import axiosInstance from '../config/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
+import { useRoute } from '@react-navigation/native';
 
 const MessageScreen = () => {
+  const route = useRoute();
   /* const [messages, setMessages] = useState([
     { id: '1', text: 'Hello! How are you?', isSent: true, time: '10:00 AM' },
     { id: '2', text: 'I’m good, thanks!', isSent: false, time: '10:01 AM' },
@@ -15,14 +17,17 @@ const MessageScreen = () => {
   ]);
   const [newMessage, setNewMessage] = useState('');
   const { userInfo } = useContext(AuthContext);
- console.log('user info ', userInfo)
+  const [existeConversacion, setExisteConversacion] = useState(false);
+  const parametros = route.params; // Recupera `user` desde `route.params`
+
+  console.log('parametros ',parametros)
   useEffect(() => {
     loadMessages()
   }, []);
 
   const loadMessages = async () => {
     try {
-      const response = await axiosInstance.get('/message?conversationId');
+      const response = await axiosInstance.get('/message?conversationId=1');
       console.log(response.data)
       setMessages(response.data)
       // setUsuarios(response.data)
