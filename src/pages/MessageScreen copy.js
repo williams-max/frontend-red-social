@@ -4,58 +4,25 @@ import { Avatar, Icon } from 'react-native-elements';
 import axiosInstance from '../config/axiosConfig';
 import { AuthContext } from '../context/AuthContext';
 import { useRoute } from '@react-navigation/native';
-import io from 'socket.io-client';
-
-// const socket = io('http://192.168.185.33:3000'); // Cambia a la URL de tu servidor
-const socket = io('http://192.168.185.33:3000', {
-  transports: ['websocket', 'polling']
-});
 
 const MessageScreen = () => {
   const route = useRoute();
+  /* const [messages, setMessages] = useState([
+    { id: '1', text: 'Hello! How are you?', isSent: true, time: '10:00 AM' },
+    { id: '2', text: 'I’m good, thanks!', isSent: false, time: '10:01 AM' },
+    { id: '3', text: 'Great! Want to catch up later?', isSent: true, time: '10:05 AM' },
+    { id: '4', text: 'Sure, let me know the time.', isSent: false, time: '10:06 AM' },
+  ]); */
   const [messages, setMessages] = useState([
   ]);
   const [newMessage, setNewMessage] = useState('');
   const { userInfo } = useContext(AuthContext);
-  const [socketConnected, setSocketConnected] = useState(false); // Estado para monitorear la conexión
   const parametros = route.params; // Recupera `user` desde `route.params`
 
   // console.log('parametros ',parametros)
   useEffect(() => {
     setMessages([]);
     loadMessages()
-      // Conectar al servidor y unirse a la conversación
-      socket.connect();
-
-      // Conectar al servidor y unirse a la conversación
-    socket.connect();
-
-    // Eventos para verificar la conexión
-    socket.on('connect', () => {
-      console.log('Conexión con Socket.IO exitosa');
-      setSocketConnected(true); // Cambia el estado para indicar conexión exitosa
-    });
-
-    socket.on('connect_error', (error) => {
-      console.error('Error de conexión con Socket.IO:', error);
-      // Alert.alert('Error', 'No se pudo conectar con el servidor. Por favor, revisa tu conexión.');
-      setSocketConnected(false); // Cambia el estado para indicar falla en la conexión
-    });
-
-    socket.on('disconnect', () => {
-      console.log('Socket desconectado');
-      setSocketConnected(false); // Indica que el socket está desconectado
-    });
-      socket.emit('join', parametros.user.id); // Únete a la conversación específica
-  
-      // Escuchar mensajes en tiempo real
-      socket.on('mensaje', (message) => {
-        setMessages((prevMessages) => [...prevMessages, message]);
-      });
-  
-      return () => {
-        socket.disconnect(); // Desconectar al desmontar el componente
-      };
   }, [route.params.user]);
 
   const loadMessages = async () => {
@@ -80,42 +47,27 @@ const MessageScreen = () => {
 
   const handleSend = async () => {
     try {
-      /*const creacionMensaje = await axiosInstance.post('/message',{
+      const creacionMensaje = await axiosInstance.post('/message',{
         "remitenteId": userInfo.id,
         "receptorId":  parametros.user.id,
         "content": newMessage
       });
       await loadMessages()
-       */
-        // Obtener el `conversationId` existente entre el remitente y receptor
-      const responseExiste = await axiosInstance.post('/existe-conversacion', {
-        "remitenteId": userInfo.id,
-        "receptorId": parametros.user.id
-      });
-      const conversationId = responseExiste.data[0].conversation_id;
-
-      const messageData = {
-        conversationId,
-        content: newMessage,
-        remitenteId: userInfo.id,
-        receptorId:  parametros.user.id,
-      };
-
-      // Emitir el mensaje en tiempo real con Socket.IO
-      socket.emit('mensaje', messageData);
-
-      // Guardar el mensaje en la base de datos
-      await axiosInstance.post('/message', messageData);
-
-      // Limpiar el campo de entrada y actualizar los mensajes
-      setNewMessage('');
-      setMessages((prevMessages) => [
-        ...prevMessages,
-        { ...messageData, createdAt: new Date().toISOString() }
-      ]);
     } catch (error) {
       console.log("error ----> ", error)
     }
+    
+    /* if (newMessage.trim()) {
+      const currentTime = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const newMessageData = {
+        id: Math.random().toString(),
+        text: newMessage,
+        isSent: true,
+        time: currentTime,
+      };
+      setMessages((prevMessages) => [...prevMessages, newMessageData]);
+      setNewMessage('');
+    }  */
   };
 
   const compareId = (senderId) => {
