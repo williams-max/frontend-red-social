@@ -7,7 +7,7 @@ import { useRoute } from '@react-navigation/native';
 import io from 'socket.io-client';
 
 // const socket = io('http://192.168.185.33:3000'); // Cambia a la URL de tu servidor
-const socket = io('http://192.168.185.33:3000', {
+const socket = io('http://192.168.145.33:3000', {
   transports: ['websocket', 'polling']
 });
 
@@ -50,6 +50,7 @@ const MessageScreen = () => {
   
       // Escuchar mensajes en tiempo real
       socket.on('mensaje', (message) => {
+        console.log('mejaje ...z ', message)
         setMessages((prevMessages) => [...prevMessages, message]);
       });
   
@@ -103,16 +104,17 @@ const MessageScreen = () => {
 
       // Emitir el mensaje en tiempo real con Socket.IO
       socket.emit('mensaje', messageData);
-
+      console.log('bebeto')
       // Guardar el mensaje en la base de datos
       await axiosInstance.post('/message', messageData);
 
       // Limpiar el campo de entrada y actualizar los mensajes
       setNewMessage('');
-      setMessages((prevMessages) => [
+      await loadMessages();
+      /* setMessages((prevMessages) => [
         ...prevMessages,
         { ...messageData, createdAt: new Date().toISOString() }
-      ]);
+      ]); */
     } catch (error) {
       console.log("error ----> ", error)
     }
