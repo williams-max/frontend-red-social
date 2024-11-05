@@ -7,7 +7,7 @@ import { useRoute } from '@react-navigation/native';
 import io from 'socket.io-client';
 
 // const socket = io('http://192.168.185.33:3000'); // Cambia a la URL de tu servidor
-const socket = io('http://192.168.145.33:3000', {
+const socket = io('http://192.168.3.197:3000', {
   transports: ['websocket', 'polling']
 });
 
@@ -46,13 +46,15 @@ const MessageScreen = () => {
       console.log('Socket desconectado');
       setSocketConnected(false); // Indica que el socket está desconectado
     });
-      socket.emit('join', parametros.user.id); // Únete a la conversación específica
-  
-      // Escuchar mensajes en tiempo real
-      socket.on('mensaje', (message) => {
-        console.log('mejaje ...z ', message)
-        setMessages((prevMessages) => [...prevMessages, message]);
-      });
+
+    
+    // socket.emit('join', parametros.user.id); // Únete a la conversación específica
+
+    // Escuchar mensajes en tiempo real
+    socket.on('mensaje', (message) => {
+      console.log('mejaje ...z ', message)
+      setMessages((prevMessages) => [...prevMessages, message]);
+    });
   
       return () => {
         socket.disconnect(); // Desconectar al desmontar el componente
@@ -69,7 +71,9 @@ const MessageScreen = () => {
         "remitenteId": userInfo.id,
         "receptorId":  parametros.user.id
       });
+      console.log('response existe conver ', responseExiste)
       if (responseExiste?.data?.length > 0) {
+        socket.emit('join', responseExiste.data[0].conversation_id); // Únete a la conversación específica
         const response = await axiosInstance.get(`/message?conversationId=${responseExiste.data[0].conversation_id}`);
         setMessages(response.data)
       }
@@ -93,20 +97,38 @@ const MessageScreen = () => {
         "remitenteId": userInfo.id,
         "receptorId": parametros.user.id
       });
-      const conversationId = responseExiste.data[0].conversation_id;
 
-      const messageData = {
-        conversationId,
-        content: newMessage,
-        remitenteId: userInfo.id,
-        receptorId:  parametros.user.id,
-      };
+      if(responseExiste.length > 0) {
+        console.log('existe comversacion aaaaaaaaaaaaaaaaa send ', responseExiste.data)
+        const conversationId = responseExiste.data[0].conversation_id;
 
-      // Emitir el mensaje en tiempo real con Socket.IO
-      socket.emit('mensaje', messageData);
-      console.log('bebeto')
-      // Guardar el mensaje en la base de datos
-      await axiosInstance.post('/message', messageData);
+        const messageData = {
+          conversationId,
+          content: newMessage,
+          remitenteId: userInfo.id,
+          receptorId:  parametros.user.id,
+        };
+
+        // Emitir el mensaje en tiempo real con Socket.IO
+        socket.emit('mensaje', messageData);
+        // Guardar el mensaje en la base de datos
+        await axiosInstance.post('/message', messageData);
+      } else {
+        const messageData = {
+          content: newMessage,
+          remitenteId: userInfo.id,
+          receptorId:  parametros.user.id,
+        };
+        // Guardar el mensaje en la base de datos
+        const creacionMensaje = await axiosInstance.post('/message', messageData);
+        console.log('creacion de mensjae ', creacionMensaje.data.conversationId)
+        messageData.conversationId =  creacionMensaje.data.conversationId
+        // Emitir el mensaje en tiempo real con Socket.IO
+        socket.emit('mensaje', messageData);
+        
+        
+      }
+      
 
       // Limpiar el campo de entrada y actualizar los mensajes
       setNewMessage('');
