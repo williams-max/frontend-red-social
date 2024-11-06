@@ -45,7 +45,6 @@ const MessageScreen = () => {
 
     // Escuchar mensajes en tiempo real
     socket.on('mensaje', (message) => {
-      console.log('mejaje ...z ', message)
       setMessages((prevMessages) => [...prevMessages, message]);
     });
   
@@ -64,13 +63,11 @@ const MessageScreen = () => {
         "remitenteId": state.user.id,
         "receptorId":  parametros.user.id
       });
-      console.log('response existe conver ', responseExiste)
       if (responseExiste?.data?.length > 0) {
         socket.emit('join', responseExiste.data[0].conversation_id); // Únete a la conversación específica
         const response = await axiosInstance.get(`/message?conversationId=${responseExiste.data[0].conversation_id}`);
         setMessages(response.data)
       }
-      // setUsuarios(response.data)
     } catch (error) {
       console.log(error)
     }
@@ -78,13 +75,6 @@ const MessageScreen = () => {
 
   const handleSend = async () => {
     try {
-      /*const creacionMensaje = await axiosInstance.post('/message',{
-        "remitenteId": userInfo.id,
-        "receptorId":  parametros.user.id,
-        "content": newMessage
-      });
-      await loadMessages()
-       */
         // Obtener el `conversationId` existente entre el remitente y receptor
       const responseExiste = await axiosInstance.post('/existe-conversacion', {
         "remitenteId": state.user.id,
@@ -92,7 +82,6 @@ const MessageScreen = () => {
       });
 
       if(responseExiste.length > 0) {
-        console.log('existe comversacion aaaaaaaaaaaaaaaaa send ', responseExiste.data)
         const conversationId = responseExiste.data[0].conversation_id;
 
         const messageData = {
@@ -102,10 +91,11 @@ const MessageScreen = () => {
           receptorId:  parametros.user.id,
         };
 
-        
         // Guardar el mensaje en la base de datos
         const smsCreado= await axiosInstance.post('/message', messageData);
+        // opcional
         messageData.userCreador = smsCreado.data.userCreador
+        messageData.senderId = creacionMensaje.data.senderId
         // Emitir el men en tiempo real con Socket.IO
         socket.emit('mensaje', messageData);
       } else {
@@ -116,36 +106,34 @@ const MessageScreen = () => {
         };
         // Guardar el mensaje en la base de datos
         const creacionMensaje = await axiosInstance.post('/message', messageData);
-        console.log('creacion de mensjae ', creacionMensaje.data.conversationId)
         messageData.conversationId =  creacionMensaje.data.conversationId
+        // opcional
         messageData.userCreador = creacionMensaje.data.userCreador
+        messageData.senderId = creacionMensaje.data.senderId
         // Emitir el mensaje en tiempo real con Socket.IO
         socket.emit('mensaje', messageData);
         
-        
       }
       
-
       // Limpiar el campo de entrada y actualizar los mensajes
       setNewMessage('');
       await loadMessages();
-      /* setMessages((prevMessages) => [
-        ...prevMessages,
-        { ...messageData, createdAt: new Date().toISOString() }
-      ]); */
     } catch (error) {
       console.log("error ----> ", error)
     }
   };
 
-  const compareId = (senderId) => {
-    if (state.user?.id === senderId) {
-      return false;
-    } else {
-      return true;
-    }
-  }
+  const compareId = (senderId) => state.user?.id !== senderId;
 
+  const formatDate = (fecha) => {
+    const messageTime = new Date(fecha).toLocaleTimeString([], { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: true // Esto añade AM o PM
+    });
+    return messageTime
+  }
+  
   return (
     <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
       <ScrollView contentContainerStyle={styles.messageList}>
@@ -174,7 +162,7 @@ const MessageScreen = () => {
               >
                 <Text style={styles.messageText}>{message.content}</Text>
               </View>
-              <Text style={styles.messageTime}>{message.createdAt}</Text>
+              <Text style={styles.messageTime}>{formatDate(message.createdAt)}</Text>
             </View>
           </View>
         ))}
