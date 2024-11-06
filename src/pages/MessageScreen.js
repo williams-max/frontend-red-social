@@ -17,7 +17,6 @@ const MessageScreen = () => {
   ]);
   const [newMessage, setNewMessage] = useState('');
   const { userInfo } = useContext(AuthContext);
-  const [socketConnected, setSocketConnected] = useState(false); // Estado para monitorear la conexión
   const parametros = route.params; // Recupera `user` desde `route.params`
 
   // console.log('parametros ',parametros)
@@ -27,24 +26,18 @@ const MessageScreen = () => {
       // Conectar al servidor y unirse a la conversación
       socket.connect();
 
-      // Conectar al servidor y unirse a la conversación
-    socket.connect();
-
     // Eventos para verificar la conexión
     socket.on('connect', () => {
       console.log('Conexión con Socket.IO exitosa');
-      setSocketConnected(true); // Cambia el estado para indicar conexión exitosa
     });
 
     socket.on('connect_error', (error) => {
       console.error('Error de conexión con Socket.IO:', error);
       // Alert.alert('Error', 'No se pudo conectar con el servidor. Por favor, revisa tu conexión.');
-      setSocketConnected(false); // Cambia el estado para indicar falla en la conexión
     });
 
     socket.on('disconnect', () => {
       console.log('Socket desconectado');
-      setSocketConnected(false); // Indica que el socket está desconectado
     });
 
     
@@ -109,10 +102,12 @@ const MessageScreen = () => {
           receptorId:  parametros.user.id,
         };
 
-        // Emitir el mensaje en tiempo real con Socket.IO
-        socket.emit('mensaje', messageData);
+        
         // Guardar el mensaje en la base de datos
-        await axiosInstance.post('/message', messageData);
+        const smsCreado= await axiosInstance.post('/message', messageData);
+        messageData.userCreador = smsCreado.data.userCreador
+        // Emitir el men en tiempo real con Socket.IO
+        socket.emit('mensaje', messageData);
       } else {
         const messageData = {
           content: newMessage,
@@ -123,6 +118,7 @@ const MessageScreen = () => {
         const creacionMensaje = await axiosInstance.post('/message', messageData);
         console.log('creacion de mensjae ', creacionMensaje.data.conversationId)
         messageData.conversationId =  creacionMensaje.data.conversationId
+        messageData.userCreador = creacionMensaje.data.userCreador
         // Emitir el mensaje en tiempo real con Socket.IO
         socket.emit('mensaje', messageData);
         
