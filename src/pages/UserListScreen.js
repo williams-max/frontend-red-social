@@ -1,27 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
 import { Avatar } from 'react-native-elements';
-
-const users = [
-  { id: '1', name: 'John Doe', avatar: 'https://i.ibb.co/9ZjWrZG/men.png' },
-  { id: '2', name: 'Jane Smith', avatar: 'https://i.ibb.co/9ZjWrZG/men.png' },
-  { id: '3', name: 'Mike Johnson', avatar: 'https://i.ibb.co/9ZjWrZG/men.png' },
-];
+import axiosInstance from '../config/axiosConfig';
+import { AuthContext } from '../context/AuthContext';
 
 const UserListScreen = ({ navigation }) => {
-  const handlePress = (user) => {
+  const { state } = useContext(AuthContext);
+  const [listUsers, setListUsers] = useState([]);
+
+  useEffect(() => {
+    loadUsersConversation();
+  }, []);
+
+  const loadUsersConversation = async () => {
+    const response = await axiosInstance.get(`users-conversation?userId=${state.user.id}`);
+    setListUsers(response.data);
+  };
+
+  const handlePress = (item) => {
+    const user = item.messagelast.userCreador
     navigation.navigate('MessageScreen', { user });
   };
 
   return (
     <View style={styles.container}>
       <FlatList
-        data={users}
+        data={listUsers}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <TouchableOpacity style={styles.userContainer} onPress={() => handlePress(item)}>
-            <Avatar rounded size="medium" source={{ uri: item.avatar }} containerStyle={styles.avatar} />
-            <Text style={styles.userName}>{item.name}</Text>
+            <Avatar rounded size="medium" source={{ uri: item.messagelast.userCreador.imageUrl }} containerStyle={styles.avatar} />
+            <View style={styles.textContainer}>
+              <Text style={styles.userName}>{item.messagelast.userCreador.name}</Text>
+              <Text style={styles.content}>{item.messagelast.content}</Text>
+            </View>
           </TouchableOpacity>
         )}
       />
@@ -49,9 +61,19 @@ const styles = StyleSheet.create({
   avatar: {
     marginRight: 15,
   },
+  textContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  content: {
+    fontSize: 16,
+    color: '#666',
+  },
   userName: {
-    fontSize: 18,
-    color: '#333',
+    fontSize: 14,
+    // color: '#999',
+    fontWeight:'bold',
+    marginTop: 5,
   },
 });
 
