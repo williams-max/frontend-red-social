@@ -16,7 +16,7 @@ const MessageScreen = () => {
   const [messages, setMessages] = useState([
   ]);
   const [newMessage, setNewMessage] = useState('');
-  const { userInfo } = useContext(AuthContext);
+  const { state } = useContext(AuthContext);
   const parametros = route.params; // Recupera `user` desde `route.params`
 
   // console.log('parametros ',parametros)
@@ -57,11 +57,11 @@ const MessageScreen = () => {
   const loadMessages = async () => {
     try {
 
-      if(!userInfo?.id || !parametros?.user?.id){
+      if(!state.user?.id || !parametros?.user?.id){
         return ;
       }
       const responseExiste = await axiosInstance.post('/existe-conversacion',{
-        "remitenteId": userInfo.id,
+        "remitenteId": state.user.id,
         "receptorId":  parametros.user.id
       });
       console.log('response existe conver ', responseExiste)
@@ -87,7 +87,7 @@ const MessageScreen = () => {
        */
         // Obtener el `conversationId` existente entre el remitente y receptor
       const responseExiste = await axiosInstance.post('/existe-conversacion', {
-        "remitenteId": userInfo.id,
+        "remitenteId": state.user.id,
         "receptorId": parametros.user.id
       });
 
@@ -98,7 +98,7 @@ const MessageScreen = () => {
         const messageData = {
           conversationId,
           content: newMessage,
-          remitenteId: userInfo.id,
+          remitenteId: state.user.id,
           receptorId:  parametros.user.id,
         };
 
@@ -111,7 +111,7 @@ const MessageScreen = () => {
       } else {
         const messageData = {
           content: newMessage,
-          remitenteId: userInfo.id,
+          remitenteId: state.user.id,
           receptorId:  parametros.user.id,
         };
         // Guardar el mensaje en la base de datos
@@ -139,7 +139,7 @@ const MessageScreen = () => {
   };
 
   const compareId = (senderId) => {
-    if (userInfo?.id === senderId) {
+    if (state.user?.id === senderId) {
       return false;
     } else {
       return true;

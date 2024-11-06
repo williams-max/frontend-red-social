@@ -1,22 +1,52 @@
 // src/context/AuthContext.js
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useReducer } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axiosInstance from '../config/axiosConfig'; // Importar la configuración de Axios
 // import axios from 'axios';
 
 export const AuthContext = createContext();
 
+const initialState = {
+  isLoggedIn: false,
+  user: null, // Para guardar los datos del usuario
+};
+
+const authReducer = (state, action) => {
+  switch (action.type) {
+    case 'LOGIN':
+      console.log('action payload ', action.payload)
+      return {
+        ...state,
+        isLoggedIn: true,
+        user: action.payload, // Guardamos los datos del usuario aquí
+      };
+    case 'LOGOUT':
+      return {
+        ...state,
+        isLoggedIn: false,
+        user: null,
+      };
+    case 'RESTORE_TOKEN':
+      return {
+        ...state,
+        isLoggedIn: action.payload.isLoggedIn,
+        user: action.payload.user,
+      };
+    default:
+      return state;
+  }
+};
+
 export const AuthProvider = ({ children }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [userInfo, setUserInfo] = useState(null); // Inicializado a null
+  const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    // Aquí verifica si el usuario está autenticado (ej. con AsyncStorage o algún otro método)
-    const checkLoginStatus = async () => {
-      const userToken = await AsyncStorage.getItem('user');
-      setIsLoggedIn(!!userToken);
+    const loadUserData = async () => {
+      const user = await AsyncStorage.getItem('user');
+      const isLoggedIn = (await AsyncStorage.getItem('isLoggedIn')) === 'true';
+      dispatch({ type: 'RESTORE_TOKEN', payload: { isLoggedIn, user: JSON.parse(user) } });
     };
-    checkLoginStatus();
+    loadUserData();
   }, []);
 
   const login = async (email, password) => {
@@ -31,11 +61,22 @@ export const AuthProvider = ({ children }) => {
         token: response.data.token,
       };
       // Guarda token o estado de autenticación en AsyncStorage
+      await AsyncStorage.setItem('isLoggedIn', 'true');
       await AsyncStorage.setItem('user', JSON.stringify(userData));
-      setIsLoggedIn(true);
-      setUserInfo(userData); // Actualiza la información del usuario
+      dispatch({ type: 'LOGIN', payload: userData });
     } catch (error) {
-      console.log(error)
+      console.error('Error al iniciar sesión:', error);
+    }
+  };
+
+
+  const logout = async () => {
+    try {
+      await AsyncStorage.removeItem('isLoggedIn');
+      await AsyncStorage.removeItem('user');
+      dispatch({ type: 'LOGOUT' });
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
     }
   };
 
@@ -58,14 +99,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setIsLoggedIn(false);
-    AsyncStorage.removeItem('user');
-  };
-
   return (
-    <AuthContext.Provider value={{ isLoggedIn , userInfo, login, logout , register }}>
+    <AuthContext.Provider value={{ state, login, logout, register }}>
       {children}
     </AuthContext.Provider>
   );
 };
+
+export default AuthContext;

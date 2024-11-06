@@ -25,11 +25,11 @@ const MessagesStackScreen = () => (
 );
 
 const AppContent = () => {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { state } = useContext(AuthContext);
 
   return (
     <NavigationContainer>
-      {isLoggedIn ? (
+      {state.isLoggedIn ? (
         <Tab.Navigator
           screenOptions={({ route }) => ({
             tabBarIcon: ({ color, size }) => {

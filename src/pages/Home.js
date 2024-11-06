@@ -6,7 +6,7 @@ import { AuthContext } from '../context/AuthContext';
 import axiosInstance from '../config/axiosConfig';
 
 const Home = ({ navigation }) => {
-  const { userInfo } = useContext(AuthContext);
+  const { state } = useContext(AuthContext);
   const [usuarios, setUsuarios ] = useState([]);
   const posts = [
     { id: '1', name: 'John Doe',description: 'Post description goes here...', imageUrl: 'https://i.ibb.co/9ZjWrZG/men.png' },
@@ -59,9 +59,9 @@ const Home = ({ navigation }) => {
     <View style={styles.container}>
       {/* Header Section */}
       <View style={styles.header}>
-        <Avatar rounded size="large" source={{ uri: userInfo?.imageUrl }} />
+        <Avatar rounded size="large" source={{ uri: state.user?.imageUrl }} />
         <View style={styles.userInfo}>
-          <Text style={styles.userName}>{ userInfo?.name}</Text>
+          <Text style={styles.userName}>{ state.user?.name}</Text>
           <Text style={styles.userStats}>Posts: 23 | Followers: 120</Text>
         </View>
         <View style={styles.buttons}>
